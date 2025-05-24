@@ -59,7 +59,7 @@ client.on("message", async (message) => {
   // );
 
   if (message.body === "~ping") {
-    await message.reply("Nigger");
+    await message.reply("Lorem ipsum dolor sit amet. adipiscing elit");
   }
 
   if (message.body === "~tagall" && message.from.endsWith("@g.us")) {
