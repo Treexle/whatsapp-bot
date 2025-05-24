@@ -2,22 +2,13 @@ const fs = require("fs");
 const path = require("path");
 const mime = require("mime-types");
 const qrcode = require("qrcode-terminal");
-const QRCode = require("qrcode");
-const express = require("express");
 const { Client, MessageMedia, LocalAuth } = require("whatsapp-web.js");
+
 // temp directory by waweb.js
 const authDir = path.join(__dirname, ".wwebjs_auth");
 const cacheDir = path.join(__dirname, ".wwebjs_cache");
 const cooldowns = new Map();
-const app = express();
-const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
-app.get("/", (req, res) => {
-  res.send("✅ WhatsApp bot is running. Visit /qr.png to scan QR.");
-});
 // Create client with LocalAuth (auto session saving)
 const client = new Client({
   authStrategy: new LocalAuth(),
@@ -28,17 +19,11 @@ const client = new Client({
 });
 
 // Show QR code in terminal
-client.on("qr", async (qr) => {
-  //kalo pake yang qr terminal "async" dihapus
-  const qrImagePath = "./qr.png";
-  await QRCode.toFile(qrImagePath, qr);
-  const domain = process.env.RAILWAY_STATIC_URL || `localhost:${PORT}`;
-  console.log(`⚠️ Scan the QR at: https://${domain}/qr.png`);
-  // qrcode.generate(qr, { small: true });
-  // console.log("📱 Scan QR Code.");
+client.on("qr", (qr) => {
+  qrcode.generate(qr, { small: true });
+  console.log("📱 Scan QR Code.");
 });
 
-app.use("/qr.png", express.static(path.join(__dirname, "qr.png")));
 // Notify when authenticated
 client.on("authenticated", () => {
   console.log("🔒 Authenticated!");
@@ -59,7 +44,7 @@ client.on("message", async (message) => {
   // );
 
   if (message.body === "~ping") {
-    await message.reply("Lorem ipsum dolor sit amet. adipiscing elit");
+    await message.reply("Nigger");
   }
 
   if (message.body === "~tagall" && message.from.endsWith("@g.us")) {
@@ -69,9 +54,7 @@ client.on("message", async (message) => {
 
     if (now - lastUsed < cooldownTime) {
       const wait = Math.ceil((cooldownTime - (now - lastUsed)) / 1000);
-      return message.reply(
-        `⏳ Tunggu ${wait} detik sebelum menggunakan perintah ini lagi.`
-      );
+      return message.reply(`⏳ Tunggu ${wait} detik sebelum menggunakan perintah ini lagi.`);
     }
 
     cooldowns.set(message.from, now);
