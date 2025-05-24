@@ -2,8 +2,9 @@ const fs = require("fs");
 const path = require("path");
 const mime = require("mime-types");
 const qrcode = require("qrcode-terminal");
+const QRCode = require("qrcode");
 const { Client, MessageMedia, LocalAuth } = require("whatsapp-web.js");
-
+const QRCode = require("qrcode");
 // temp directory by waweb.js
 const authDir = path.join(__dirname, ".wwebjs_auth");
 const cacheDir = path.join(__dirname, ".wwebjs_cache");
@@ -19,11 +20,16 @@ const client = new Client({
 });
 
 // Show QR code in terminal
-client.on("qr", (qr) => {
-  qrcode.generate(qr, { small: true });
-  console.log("📱 Scan QR Code.");
+client.on("qr", async (qr) => {
+  //kalo pake yang qr terminal "async" dihapus
+  const qrImagePath = "./qr.png";
+  await QRCode.toFile(qrImagePath, qr);
+  console.log("⚠️ Please open the QR image manually at /qr.png");
+  // qrcode.generate(qr, { small: true });
+  // console.log("📱 Scan QR Code.");
 });
 
+app.use("/qr.png", express.static(path.join(__dirname, "qr.png")));
 // Notify when authenticated
 client.on("authenticated", () => {
   console.log("🔒 Authenticated!");
@@ -54,7 +60,9 @@ client.on("message", async (message) => {
 
     if (now - lastUsed < cooldownTime) {
       const wait = Math.ceil((cooldownTime - (now - lastUsed)) / 1000);
-      return message.reply(`⏳ Tunggu ${wait} detik sebelum menggunakan perintah ini lagi.`);
+      return message.reply(
+        `⏳ Tunggu ${wait} detik sebelum menggunakan perintah ini lagi.`
+      );
     }
 
     cooldowns.set(message.from, now);
