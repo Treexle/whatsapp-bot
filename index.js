@@ -3,11 +3,13 @@ const path = require("path");
 const mime = require("mime-types");
 const qrcode = require("qrcode-terminal");
 const QRCode = require("qrcode");
+const express = require("express");
 const { Client, MessageMedia, LocalAuth } = require("whatsapp-web.js");
 // temp directory by waweb.js
 const authDir = path.join(__dirname, ".wwebjs_auth");
 const cacheDir = path.join(__dirname, ".wwebjs_cache");
 const cooldowns = new Map();
+const app = express();
 
 // Create client with LocalAuth (auto session saving)
 const client = new Client({
