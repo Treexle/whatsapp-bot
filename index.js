@@ -10,7 +10,14 @@ const authDir = path.join(__dirname, ".wwebjs_auth");
 const cacheDir = path.join(__dirname, ".wwebjs_cache");
 const cooldowns = new Map();
 const app = express();
+const PORT = process.env.PORT || 3000;
 
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
+app.get("/", (req, res) => {
+  res.send("✅ WhatsApp bot is running. Visit /qr.png to scan QR.");
+});
 // Create client with LocalAuth (auto session saving)
 const client = new Client({
   authStrategy: new LocalAuth(),
@@ -25,7 +32,8 @@ client.on("qr", async (qr) => {
   //kalo pake yang qr terminal "async" dihapus
   const qrImagePath = "./qr.png";
   await QRCode.toFile(qrImagePath, qr);
-  console.log("⚠️ Please open the QR image manually at /qr.png");
+  const domain = process.env.RAILWAY_STATIC_URL || `localhost:${PORT}`;
+  console.log(`⚠️ Scan the QR at: https://${domain}/qr.png`);
   // qrcode.generate(qr, { small: true });
   // console.log("📱 Scan QR Code.");
 });
